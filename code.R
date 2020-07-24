@@ -111,3 +111,74 @@ mean(x$Female)
 sd(x$Male)
 sd(x$Female)
 
+# Motivation
+library(dplyr)
+dat <- read.csv("femaleMiceWeights.csv")
+controls <- filter(dat,Diet=="chow") %>% select("Bodyweight") %>% unlist
+treatment <- filter(dat,Diet=="hf") %>% select("Bodyweight") %>% unlist
+mean(controls)
+mean(treatment)
+obs <- mean(treatment) - mean(controls)
+
+
+library(downloader) 
+url <- "https://raw.githubusercontent.com/genomicsclass/dagdata/master/inst/extdata/femaleControlsPopulation.csv"
+filename <- basename(url)
+download(url, destfile=filename)
+x <- unlist( read.csv(filename) )
+View(x)
+y <- mean(x)
+set.seed(1)
+abs(mean(sample(x,5))-y)
+set.seed(5)
+abs(mean(sample(x,5))-y)
+
+
+n <- 10000
+nulls <- vector("numeric",n)
+for (i in 1:n) {
+  control <- sample(x,12)
+  treatment <- sample(x,12)
+  nulls[i] <- mean(treatment) - mean(control)
+}
+max(nulls)
+hist(nulls)
+mean( nulls > obs)
+
+x
+set.seed(1)
+n <- 1000
+vals <- vector("numeric",n)
+for (i in 1:n) {
+  vals[i] <- mean(sample(x,50))
+}
+vals
+mean(abs(vals-mean(x))>1)
+
+#Probability Distributions Exercises
+install.packages("gapminder")
+library(gapminder)
+data(gapminder)
+head(gapminder)
+View(gapminder)
+
+#Create a vector x of the life expectancies of each country for the year 1952. 
+# Plot a histogram of these life expectancies to see the spread of the different countries.
+x <- filter(gapminder,year==1952) %>% select("lifeExp") %>% unlist
+View(x)
+hist(x)
+
+#What is the proportion of countries in 1952 that have a life expectancy less than or equal to 40?
+mean(x <=40)
+#What is the proportion of countries in 1952 that have a life expectancy between 40 and 60 years?
+mean(x <=60)-mean(x <=40)
+
+prop = function(q) {
+  mean(x <= q)
+}
+prop(40)
+qs = seq(from=min(x), to=max(x), length=20)
+props = sapply(qs, prop)
+plot(qs, props)
+props = sapply(qs, function(q) mean(x <= q))
+plot(ecdf(x))

@@ -1,0 +1,116 @@
+---
+title: "CLT and t-distribution in Practice Exercises"
+output: html_document
+---
+```{r}
+library(downloader)
+url <- "https://raw.githubusercontent.com/genomicsclass/dagdata/master/inst/extdata/femaleMiceWeights.csv"
+filename <- "femaleMiceWeights.csv"
+if(!file.exists("femaleMiceWeights.csv")) download(url,destfile=filename)
+dat <- read.csv(filename)
+```
+
+```{r}
+n <- 10000
+x=sample(1:6, n, replace=TRUE)
+p <- 5/6
+z = (mean(x >= 2) - p) / sqrt(p*(1-p)/n)
+```
+
+```{r}
+n <- 10000
+set.seed(1)
+# x=sample(1:6, n, replace=TRUE)
+p <- 1/6
+# ( y - mean(y) ) / popsd(y)
+z <- replicate(n,(mean(sample(1:6, 100, replace=TRUE)==6) - p) / sqrt(p*(1-p)/100))
+mean(abs(z)>2)
+```
+
+```{r}
+set.seed(1)
+n <- 100
+sides <- 6
+p <- 1/sides
+zs <- replicate(10000,{
+  x <- sample(1:sides,n,replace=TRUE)
+  (mean(x==6) - p) / sqrt(p*(1-p)/n)
+}) 
+qqnorm(zs)
+abline(0,1)#confirm it's well approximated with normal distribution
+mean(abs(zs) > 2)
+```
+
+```{r}
+set.seed(1)
+n <- 5
+sides <- 6
+p <- 0.5
+zs <- replicate(10000,{
+  x <- sample(1:sides,n,replace=TRUE)
+  (mean(x==6) - p) / sqrt(p*(1-p)/n)
+}) 
+qqnorm(zs)
+abline(0,1)
+#confirm it's well approximated with normal distribution
+mean(abs(zs) > 2)
+#2
+set.seed(1)
+n <- 30
+sides <- 6
+p <- 0.5
+zs <- replicate(10000,{
+  x <- sample(1:sides,n,replace=TRUE)
+  (mean(x==6) - p) / sqrt(p*(1-p)/n)
+}) 
+qqnorm(zs)
+abline(0,1)
+#confirm it's well approximated with normal distribution
+mean(abs(zs) > 2)
+#3
+set.seed(1)
+n <- 30
+sides <- 6
+p <- 0.01
+zs <- replicate(10000,{
+  x <- sample(1:sides,n,replace=TRUE)
+  (mean(x==6) - p) / sqrt(p*(1-p)/n)
+}) 
+qqnorm(zs)
+abline(0,1)
+#confirm it's well approximated with normal distribution
+mean(abs(zs) > 2)
+#4
+set.seed(1)
+n <- 100
+sides <- 6
+p <- 0.01
+zs <- replicate(10000,{
+  x <- sample(1:sides,n,replace=TRUE)
+  (mean(x==6) - p) / sqrt(p*(1-p)/n)
+}) 
+qqnorm(zs)
+abline(0,1)
+#confirm it's well approximated with normal distribution
+mean(abs(zs) > 2)
+```
+
+```{r}
+ps <- c(0.5,0.5,0.01,0.01)
+ns <- c(5,30,30,100)
+library(rafalib)
+mypar(4,2)
+for(i in 1:4){
+  p <- ps[i]
+  sides <- 1/p
+  n <- ns[i]
+  zs <- replicate(10000,{
+  	x <- sample(1:sides,n,replace=TRUE)
+  	(mean(x==1) - p) / sqrt(p*(1-p)/n)
+  }) 
+  hist(zs,nclass=7)
+  qqnorm(zs)
+  abline(0,1)
+}
+```
+
