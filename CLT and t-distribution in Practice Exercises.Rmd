@@ -114,3 +114,42 @@ for(i in 1:4){
 }
 ```
 
+```{r}
+ps <- c(0.5,0.5,0.01,0.01)
+ns <- c(5,30,30,100)
+mypar(4,2)
+for (i in 1:length(ps)) {
+  p <- ps[i]
+  sides <- 1/p
+  n <- ns[i]
+  zs <- replicate(10000, {
+    x <- sample(1:sides,n,replace = TRUE)
+    (mean(x==sides)-p)/sqrt(p*(1-p)/n)
+  })
+  hist(zs,nclass = 7)
+  qqnorm(zs)
+  abline(0,1)
+}
+```
+
+```{r}
+library(downloader)
+url <- "https://raw.githubusercontent.com/genomicsclass/dagdata/master/inst/extdata/femaleMiceWeights.csv"
+filename <- "femaleMiceWeights.csv"
+if(!file.exists("femaleMiceWeights.csv")) download(url,destfile=filename)
+dat <- read.csv(filename)
+
+X <- filter(dat, Diet=="chow") %>% select(Bodyweight) %>% unlist
+Y <- filter(dat, Diet=="hf") %>% select(Bodyweight) %>% unlist
+```
+sample average of X
+```{r}
+mean(X)
+```
+```{r}
+popsd(X)
+sd(X)
+```
+
+
+
